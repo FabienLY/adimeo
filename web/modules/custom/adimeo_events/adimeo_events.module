@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * adimeo_events module file.
+ */
+
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+
+
+/**
+ * Implements hook_cron().
+ */
+function adimeo_events_cron()
+{
+  // Get current date and format it.
+  $currentDate = new DrupalDateTime('now');
+  $formatted = $currentDate->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
+
+  // Query similar Events based on type and date
+  $entityTypeManager = \Drupal::service('entity_type.manager');
+  $query = $entityTypeManager->getStorage('node')->getQuery();
+  $query->condition('type', 'event');
+  $query->condition('field_date_end', $formatted, '<');
+  $events = $query->execute();
+
+  if (!empty($events)) {
+    $queue = \Drupal::service('queue')->get('unpublish_old_event');
+    foreach ($events as $event) {
+      $queue->createItem($event);
+    }
+  }
+
+}
+
