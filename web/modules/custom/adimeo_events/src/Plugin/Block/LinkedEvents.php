@@ -93,10 +93,11 @@ class LinkedEvents extends BlockBase implements ContainerFactoryPluginInterface{
     // Get event type from current route.
     $node = $this->current_route->getParameter('node');
     $eventType = $node->get('field_event_type')->target_id;
+    $nid = $node->id();
 
    // Get Similar Event not ended related to event type.
     if (!empty($eventType)) {
-      $similarEvents = $this->getSimilarEvents($eventType);
+      $similarEvents = $this->getSimilarEvents($eventType, $nid);
     }
 
     if (empty($similarEvents)) {
@@ -113,11 +114,14 @@ class LinkedEvents extends BlockBase implements ContainerFactoryPluginInterface{
    *
    * @param int $eventType
    *  Tid of the main event.
+   * @param int $nid
+   *  Nid of the main event.
+   *
    * @return array|int
    *  Array of nid base on the query.
    *
    */
-  private function getSimilarEvents(int $eventType) {
+  private function getSimilarEvents(int $eventType, int $nid) {
 
     // Get current date and format it.
     $currentDate = new DrupalDateTime('now');
@@ -126,6 +130,7 @@ class LinkedEvents extends BlockBase implements ContainerFactoryPluginInterface{
     // Query similar Events based on type and date
     $query = $this->entity_type_manager->getStorage('node')->getQuery();
     $query->condition('type', 'event');
+    $query->condition('nid', [$nid], 'NOT IN');
     $query->condition('field_event_type', $eventType);
     $query->condition('field_date_end', $formatted, '>');
     $query->range(0, 3);
