@@ -1,0 +1,28 @@
+uuid: 0ae63e3b-7e35-4660-89bc-9afde26157b1
+langcode: fr
+status: true
+dependencies:
+  module:
+    - adimeo_events
+    - node
+  theme:
+    - test_drupal
+id: linkedeventsblock
+theme: test_drupal
+region: content
+weight: 0
+provider: null
+plugin: linked_events
+settings:
+  id: linked_events
+  label: 'Linked events block'
+  label_display: visible
+  provider: adimeo_events
+visibility:
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      event: event

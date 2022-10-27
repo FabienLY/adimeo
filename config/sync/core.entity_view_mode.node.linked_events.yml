@@ -1,0 +1,10 @@
+uuid: df220801-995b-4278-a962-72c39c02e4aa
+langcode: fr
+status: true
+dependencies:
+  module:
+    - node
+id: node.linked_events
+label: 'Linked Events'
+targetEntityType: node
+cache: true
